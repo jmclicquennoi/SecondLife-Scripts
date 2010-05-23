@@ -1,0 +1,13 @@
+touch_start(integer total_number)
+{
+  if (following == 0)
+  {
+    llSensorRepeat("",llDetectedKey(0),AGENT,200,2*PI,.000001);
+    following = 1;
+  }
+  else
+  {
+    llSensorRemove();
+    following = 0;
+  }
+}

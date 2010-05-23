@@ -1,0 +1,44 @@
+integer stats = 0;
+float current_stat = 0.0;
+list stat_array = [];
+float raceroll = 0.0;
+string race = "";
+
+default
+{
+    state_entry()
+    {    }
+
+    touch_start(integer total_number)
+    {
+        while (stats < 6)
+        {
+            current_stat = llFrand(1.8);
+            current_stat = current_stat * 10;
+            if (current_stat < 3) {}
+            else
+            {
+                stats++;
+                stat_array += current_stat;
+            }
+        }
+        
+        raceroll = llFrand(0.5);
+        
+        if (raceroll = 0.0) { race = "Humman"; }
+        else if (raceroll = 0.1) { race = "Elf"; }
+        else if (raceroll = 0.2) { race = "Half-Elf"; }
+        else if (raceroll = 0.3) { race = "Dwarf"; }
+        else if (raceroll = 0.4) { race = "Gnome"; }
+        else if (raceroll = 0.5) { race = "Half-Orc"; }
+        
+        llSay(0,"Strength: " + (string)llList2Integer(stat_array,0));
+        llSay(0,"Dexterity: " + (string)llList2Integer(stat_array,1));
+        llSay(0,"Constitution: " + (string)llList2Integer(stat_array,2));
+        llSay(0,"Intelligence: " + (string)llList2Integer(stat_array,3));
+        llSay(0,"Wisdom: " + (string)llList2Integer(stat_array,4));
+        llSay(0,"Charisma: " + (string)llList2Integer(stat_array,5));
+        llSay(0,"Race: " + race);
+                
+    }
+}

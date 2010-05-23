@@ -1,0 +1,74 @@
+integer switch = 0;
+key name;
+vector black = <0.0, 0.0, 0.0>;
+vector white = <1.0, 1.0, 1.0>;
+vector red = <1.0, 0.0, 0.0>;
+vector blue = <0.0, 1.0, 0.0>;
+vector green = <0.0, 0.0, 1.0>;
+
+default
+{
+  state_entry()
+  {
+    llWhisper(0,"Alert Script active");
+    name = llGetOwner();
+  }
+
+  touch_start(integer total_number)
+  {
+    if (switch == 0)
+    {
+        switch = 1;
+        llSensorRepeat("","",AGENT,90.0,PI,20.0);
+        llWhisper(0,"Alert on");
+    }
+    else
+    {
+        switch = 0;
+        llSensorRemove();
+        llWhisper(0, "Alert off");
+    }
+  }
+  
+  sensor(integer total_number)
+  {
+    vector pos = llGetPos();
+    integer j;
+    integer count = total_number;
+    for (j = 0; j < count; j++)
+    {
+        if (llDetectedKey(j) != name)
+        {
+            float diff = llVecDist(pos, llDetectedPos(j));
+            integer dist = llRound(diff);
+            string result = (llDetectedName(j)) + " " + ((string)dist) + "m";
+            llWhisper(0, result);
+        }
+    }
+    if (count == 0)
+    {
+        llSetColor(black, ALL_SIDES);
+    }
+    else if (count == 1)
+    {
+        llSetColor(white, ALL_SIDES);
+    }
+    else if (count < 6)
+    {
+        llSetColor(red, ALL_SIDES);
+    }
+    else if (count < 8)
+    {
+        llSetColor(blue, ALL_SIDES);
+    }
+    else
+    {
+        llSetColor(green, ALL_SIDES);
+    }
+  }
+  
+  no_sensor()
+  {
+    llWhisper(0, "Nothing found");
+  }
+}

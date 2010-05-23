@@ -1,0 +1,11 @@
+default
+{
+  state_entry()
+  {
+  }
+
+  touch_start(integer total_number)
+  {
+    llRezObject("TeleTest 0.3", llGetPos() + <0.0,0.0,1.0>, ZERO_VECTOR, ZERO_ROTATION, 0);
+  }
+}

@@ -1,0 +1,19 @@
+default
+{
+  state_entry()
+  {
+  }
+
+  touch_start(integer total_number)
+  {
+    llSetPos(llGetPos() + <10.0, 0.0, 0.0>);
+    llUnSit(llAvatarOnSitTarget());
+    llSleep(0.5);
+    llDie();
+  }
+
+  on_rez(integer start_param)
+  {
+    llResetScript();
+  }
+}

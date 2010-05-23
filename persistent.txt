@@ -1,0 +1,91 @@
+integer l;
+integer pass = 0;
+string name;
+string filter;
+string url;
+
+startup()
+{
+    l = llListen(0,"",llGetOwner(),"");
+    llSay(0,"Who am I?");
+}
+
+listensetup(string message)
+{
+    if (pass == 0)
+    {
+        name = message;
+        pass = pass + 1;
+        llSay(0,"Where should I look?");
+    }
+    else if (pass == 1)
+    {
+        url = message;
+        pass = pass + 1;
+        urlstartup(url);
+    }
+}
+
+urlstartup(string url)
+{
+    url = url + "?cmd=verify";
+    llHTTPRequest(url, [], "");
+}
+
+listen_update_database(string message)
+{
+    string adder = llEscapeURL(message);
+    llHTTPRequest(url + "?message=" + adder, [], message);
+}
+
+string left(string src, string divider) {
+    integer index = llSubStringIndex( src, divider );
+    if(~index)
+        return llDeleteSubString( src, index + llStringLength(divider), -1);
+    return src;
+}
+
+string strReplace(string str, string search, string replace)
+{
+    return llDumpList2String(llParseStringKeepNulls((str = "") + str, [search], []), replace);
+}
+
+default
+{
+    state_entry()
+    {
+        startup();
+    }
+
+    touch_start(integer total_number)
+    {
+    }
+    
+    listen(integer channel, string name, key id, string message)
+    {
+        if (channel == 1000)
+        {
+            listensetup(message);
+        }
+        else if (channel == 0)
+        {
+            listen_update_database(message);
+        }
+    }
+
+    http_response(key request_id, integer status, list metadata, string body)
+    {
+        if (left(body, "VerifY") == "CodeOK")
+        {
+            strReplace(body, "CodeOKVerifY", "");
+            llWhisper(0, "Update okay.");
+        }
+        else if (left(body, "VerifY") == "Error")
+        {
+            llListenRemove(l);
+            pass = 0;
+            llSay(0,"Error connecting to database; try again.");
+            startup();
+        }
+    }
+}

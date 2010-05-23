@@ -1,0 +1,332 @@
+///////////////////////////////////////////////////////////////////////////
+//  Light Controls:  Movement and Intensity                              //
+//  by Dean Zeller                                                       //
+//  For SteveZ's theater production                                      //
+///////////////////////////////////////////////////////////////////////////
+
+//////////////////////
+// Global variables //
+//////////////////////
+
+string id = "L1";  //ID for the light source.  Change to L2, L3, L4, L5, or L6.
+float intensity;  // current intensity of the light
+integer channel;  //Channel to listen for commands
+integer debugMessages;
+float intensityIncrement;
+float defaultDistance;
+
+vector black  = <0.0,0.0,0.0>;
+vector red    = <1.0,0.0,0.0>;
+vector green  = <0.0,1.0,0.0>;
+vector blue   = <0.0,0.0,1.0>;
+vector white  = <1.0,1.0,1.0>;
+
+vector color;
+
+string lightshow1 = "white si 0 + + + + + + + + + + - - - - - - - - - - blue + + + + + + + + + + - - - - - - - - - red + + + + + + + + + + - - - - - - - - - - green + + + + + + + + + + - - - - - - - - - - ";
+string lightshow2 = "white si 0 si 1 si 0 si 1 blue si 0 si 1 si 0 si 1 green si 0 si 1 si 0 si 1 red si 0 si 1 si 0 si 1";
+string lightshow4 = "si 1 f white r blue b green l red f white r blue b green l red f white r blue b green l red f white r blue b green l red ";
+
+
+///////////////////////////////////////////////////////////////////////////
+// Initialization and resetting functions                                //
+///////////////////////////////////////////////////////////////////////////
+
+init()  // initialize/reset variables
+{
+    say("Dean's Nifty-Keen Programmable Light Source");
+    defaultDistance = 1.0;
+    intensity = 0.5;
+    intensityIncrement = 0.1;
+    channel = 0;
+    debugMessages = FALSE;
+    say("Waiting for commands on channel "+(string)channel);
+    llListen(channel,"",NULL_KEY,"");
+    color = white;
+}
+    
+sayHelp()  // say help commands
+{
+    integer i;
+    say("This is Dean's Nifty-Keen Programmable Light Source program.");
+    say("Type your commands on channel "+(string)channel);
+    say("See the Instructions notecard for a list of implemented commands.");
+}
+
+reset()  // reset position and rotation
+{
+    init();
+}
+
+///////////////////////////////////////////////////////////////////////////
+// Message and debugging functions                                       //
+///////////////////////////////////////////////////////////////////////////
+
+string getColor()
+{
+    if (color == black) return "black";
+    if (color == red) return "red";
+    if (color == green) return "green";
+    if (color == blue) return "blue";
+    if (color == white) return "white";
+    return (string)color;
+}    
+
+say(string msg)  // say message (aids in code readability)
+{
+    llSay(0,msg);
+}
+
+debug(string msg)  // say message only if debug is on
+{
+    if (debugMessages)
+        llSay(0,msg);
+}
+
+///////////////////////////////////////////////////////////////////////////
+// Control settings                                                      //
+///////////////////////////////////////////////////////////////////////////
+
+status()  // Display message on current settings
+{
+    if (debugMessages) say("Debug messages:  on");
+    else               say("Debug messages:  off");
+    say("Current position: "+(string)llGetPos());
+    say("Current intensity: "+(string)intensityIncrement);
+    say("Current color:  "+getColor());
+    say("Default distance:  "+(string)defaultDistance);
+}
+
+setDefaultDistance(float dist)
+{
+    defaultDistance = dist;
+}
+
+setIntensityIncrement(float inc)
+{
+    intensityIncrement = inc;
+}
+
+setDebug(integer deb)
+{
+    debugMessages = deb;
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+// Movement functions                                                    //
+///////////////////////////////////////////////////////////////////////////
+
+moveForward(float dist)  // move forward
+{
+    if (dist == 0.0) dist = defaultDistance;
+    llSetPos(llGetPos() + <dist, 0, 0>);
+}
+
+moveBackward(float dist)  // move backward
+{
+    if (dist == 0.0) dist = defaultDistance;
+    llSetPos(llGetPos() + <-dist, 0, 0>);
+}
+
+moveUp(float dist)  // move up
+{
+    if (dist == 0.0) dist = defaultDistance;
+    llSetPos(llGetPos() + <0, 0, dist>);
+}
+
+moveDown(float dist)  // move down
+{
+    if (dist == 0.0) dist = defaultDistance;
+    llSetPos(llGetPos() + <0, 0, -dist>);
+}
+
+moveLeft(float dist)  // move left
+{
+    if (dist == 0.0) dist = defaultDistance;
+    llSetPos(llGetPos() + <0, dist, 0>);
+}
+
+moveRight(float dist)  // move right
+{
+    if (dist == 0.0) dist = defaultDistance;
+    llSetPos(llGetPos() + <0, -dist, 0>);
+}
+
+///////////////////////////////////////////////////////////////////////////
+// Light intensity and color functions                                   //
+///////////////////////////////////////////////////////////////////////////
+
+setIntensity(float val)
+{
+    debug("Setting intensity to " + (string)val);
+    if (val < 0.0) val = 0.0;
+    if (val > 1.0) val = 1.0;
+    intensity = val;
+    llSetPrimitiveParams([PRIM_POINT_LIGHT, 1, color, intensity, 20.0, 0.01]);
+}
+
+increaseIntensity(float val)
+{
+    if (val <= 0.0) val = intensityIncrement;
+    debug("Increasing intensity from " + (string)intensity + " to " + (string)(intensity + val));
+    setIntensity(intensity+val);
+}
+
+decreaseIntensity(float val)
+{
+    if (val <= 0.0) val = intensityIncrement;
+    debug("Decreasing intensity from " + (string)intensity + " to " + (string)(intensity - val));
+    setIntensity(intensity-val);
+}
+
+setColor(vector col)
+{
+    color = col;
+    setIntensity(intensity);  //doesn't change the intensity -- just the color
+}
+
+///////////////////////////////////////////////////////////////////////////
+// Demos                                                                 //
+///////////////////////////////////////////////////////////////////////////
+
+lightshow3(integer num)
+{
+    integer i;
+    integer j;
+    integer d;
+    if (num == 0) num = 10;
+    for (i=0;i<num;i++)
+    {
+        setColor(<llFrand(1.0),llFrand(1.0), llFrand(1.0)>);
+        setIntensity(llFrand(1.0));
+        d = (integer)llFrand(6.0);
+        if (d == 0) execute("f "+(string)llFrand(1.0)+" ");
+        if (d == 1) execute("b "+(string)llFrand(1.0)+" ");
+        if (d == 2) execute("l "+(string)llFrand(1.0)+" ");
+        if (d == 3) execute("r "+(string)llFrand(1.0)+" ");
+        if (d == 4) execute("u "+(string)llFrand(1.0)+" ");
+        if (d == 5) execute("d "+(string)llFrand(1.0)+" ");
+    }
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+// Command execution                                                     //
+///////////////////////////////////////////////////////////////////////////
+
+execute(string commands)  // execute a string of commands
+{
+    commands += " end end";  // prevents index overflow
+    integer i;
+    list parsed = llParseString2List(commands,[" "],[]);
+    integer n = llGetListLength(parsed);
+    for (i=0;i<n; i++)
+    {
+        if (llGetFreeMemory() < 1024)
+            say("    Warning:  low memory: (" + (string)llGetFreeMemory()+" bytes)");
+        string cmd = llList2String(parsed,i);
+        debug("  "+cmd);
+        string p1  = llList2String(parsed,i+1);
+        integer p1int = (integer)p1;
+        float p1float = (float)p1;
+                
+        // movement commands
+        if (cmd == "f" || cmd == "mf" || cmd == "move_forward")
+            moveForward(p1float);
+        else if (cmd == "b" || cmd == "mb" || cmd == "move_backward" || cmd == "move_back")
+            moveBackward(p1float);
+        else if (cmd == "r" || cmd == "mr" || cmd == "move_right")
+            moveRight(p1float);
+        else if (cmd == "l" || cmd == "ml" || cmd == "move_left")
+            moveLeft(p1float);
+        else if (cmd == "u" || cmd == "mu" || cmd == "move_up")
+            moveUp(p1float);
+        else if (cmd == "d" || cmd == "md" || cmd == "move_down")
+            moveDown(p1float);
+
+        // control settings
+        else if (cmd == "sd" || cmd == "set_distance" || cmd == "sdd" || cmd == "set_default_distance")
+            setDefaultDistance(p1float);
+        else if (cmd == "si" || cmd == "set_intensity")
+            setIntensity(p1float);
+        else if (cmd == "+")
+            increaseIntensity(p1float);
+        else if (cmd == "-")
+            decreaseIntensity(p1float);
+            
+        // color controls
+        else if (cmd == "white")
+            setColor(white);
+        else if (cmd == "red")
+            setColor(red);
+        else if (cmd == "green")
+            setColor(green);
+        else if (cmd == "blue")
+            setColor(blue);
+        else if (cmd == "black")
+            setColor(black);
+            
+        // lightshow commands
+        else if (cmd == "lightshow1")
+            execute(lightshow1);
+        else if (cmd == "lightshow2")
+            execute(lightshow2);
+        else if (cmd == "lightshow3")
+            lightshow3(p1int);
+        else if (cmd == "lightshow4")
+            execute(lightshow4);
+            
+        // usage commands
+        else if (cmd == "reset")       
+            init();
+        else if (cmd == "help")        
+            sayHelp();
+        else if (cmd == "debug")
+        {
+            if (p1 == "on") setDebug(TRUE);
+            else            setDebug(FALSE);
+        }
+        else if (cmd == "status")      
+            status();
+        else if (cmd == "mem")
+            say("Free memory: " + (string)llGetFreeMemory());
+        else if (cmd == "end")
+            i = n + 1; //break out of for loop
+        else                           
+            debug("Unknown command: "+cmd+"  (ignored)");
+    }
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////
+// Default state                                                         //
+///////////////////////////////////////////////////////////////////////////
+
+default
+{
+    touch_start(integer total_number)  // when touched...
+    {
+        say("Welcome to Dean's Nifty-Keen Familiar program.");
+        say("This little device will do what you tell it to,");
+        say("provided you know what to say.  Type your commands");
+        say("on channel " + (string)channel + ".");
+        llListen(channel,"",NULL_KEY, "");
+    }
+    
+    state_entry()  // upon entry into default state
+    {
+        init();
+    }
+    
+    on_rez(integer start_param)  // upon rezzing
+    {
+        init();
+    }
+    
+    listen(integer channel, string name, key id, string message)  // listen for commands
+    {
+        execute(message);
+    }
+}
