@@ -1,0 +1,30 @@
+These are a collection of scripts for the online environment Second Life, created both as a learning aide for scripting in general in the system, and to solve several problems presented during a Kent State University theatre production by Steve Z.
+
+Scripts are listed here in chronological order of creation.  Some base code is copied from public repositories.  All code is presented in a .txt file for easy viewing and copy-paste in to the game.
+
+  dice.txt
+A script that rolls a cube with dice-patterned sides.  The base of the script was copied from a free dice item in the starting inventory.  Basic variables were modified to learn the scripting system in general.
+
+  chargen.txt
+Based on the dice rolling script, this rolls up the basic stats for a fantasy themed, Dungeons and Dragons-like character.
+
+  teleport.txt
+Base idea modified from a free script, this instantly warps an avatar to the programmed coordinates when used.
+
+  warper pair (spawner.txt, launcher.txt)
+Two scripts that work in tandem.  Spawner creates an object with the Launcher script on it when clicked; launcher flings itself somewhere (with the avatar, if sat upon) and then removes itself when clicked.
+
+  theatre_light.txt
+A collaborative effort between Dean Zeller and myself, although his file does not credit my contribution.  My code was the basis for the object, which was to be a spotlight-type of effect in the theatre, needing to look like a real spotlight, be able to change colour on command or automatically, change intensity, size, or position on command or automatically, and do so as transparently as possible to the viewer.  Our code and ideas overwrote each other often, but the basis of my contribution was the proof of how to do it, and his was polishing the code and adding user friendly commands.
+
+  person_watch.txt
+A script that, when clicked, causes the object to which it is bound to turn a certain colour, based on how many avatars are within a certain range from it.  It repeats this detection, whsipering its results to the owner, every 20 seconds until clicked again.
+
+  follow_me.txt
+A stub of a script that causes an object to follow you when clicked on.  This was part of another project for the theatre production, which necessitated a sheep follow a character around closely, up and down stairs and through narrow walkways and corners.
+
+  persistent.txt
+A glaring flaw in Second Life is the inability to save data between sessions of an object.  This script was an attempt to fix this problem using the engine's ability to load web pages in order to load a page that would connect to a database.  Unfortunately, other projects with a vital deadline took precedence over its completion.
+
+  sheep_remix.txt
+Another attempt at creating a dynamically following sheep object for Steve Z.'s theatre production, this incorperated base code from a free source and modifications by Dean Zeller before being modified again by myself to produce a better following algorithm.
